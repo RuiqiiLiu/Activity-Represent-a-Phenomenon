@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crossing Lab · Pedestrian behavior simulator</title>
+<style>
+:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#203b39;background:#f3f5f1;font-synthesis:none}*{box-sizing:border-box}body{margin:0}button,input,select{font:inherit}button,select{cursor:pointer}button:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #db922e;outline-offset:3px}header{max-width:1440px;margin:auto;padding:30px 36px 23px;display:flex;justify-content:space-between;align-items:center;gap:20px}.eyebrow{font-size:10px;font-weight:800;letter-spacing:2px;color:#64807a;text-transform:uppercase}h1{margin:7px 0 4px;font-size:32px;letter-spacing:-1.2px;font-weight:750}header p{margin:0;font-size:13px;color:#71847e}.badge{font-size:11px;border:1px solid #cddad1;border-radius:30px;padding:9px 13px;white-space:nowrap}.badge i{display:inline-block;width:7px;height:7px;background:#27836c;border-radius:50%;margin-right:7px}.layout{max-width:1440px;margin:0 auto;padding:0 36px 28px;display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:22px}.simulation{background:#e5ece0;border:1px solid #d7e1d5;border-radius:20px;overflow:hidden;position:relative}.sim-head{position:absolute;top:20px;left:22px;right:22px;display:flex;justify-content:space-between;align-items:center;gap:12px;z-index:1}.sim-title{font-size:11px;font-weight:750;letter-spacing:1.3px;text-transform:uppercase}.toolbar{display:flex;gap:6px}button{border:1px solid #d2ded7;background:#fff;color:#254b43;border-radius:8px;padding:8px 11px;font-size:11px;font-weight:700;transition:background .15s}button:hover{background:#edf4ee}button.primary{background:#264e43;border-color:#264e43;color:white}button.primary:hover{background:#37695b}canvas{display:block;width:100%;height:auto;aspect-ratio:900/740}.legend{position:absolute;bottom:20px;left:22px;right:22px;display:flex;gap:16px;flex-wrap:wrap;font-size:10px;color:#566d5e}.legend span{display:flex;align-items:center;gap:5px}.dot{width:7px;height:7px;border-radius:50%;background:#e7a34b}.dot.green{background:#25856d}.dot.purple{background:#8571b4}.sidebar{display:flex;flex-direction:column;gap:14px}.panel{background:white;border:1px solid #dfe6df;border-radius:16px;padding:20px}.panel h2{font-size:14px;margin:0 0 5px;letter-spacing:-.2px}.sub{font-size:11px;color:#7c8983;line-height:1.55;margin:0 0 16px}.signal-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-top:1px solid #edf0ec}.signal-name{font-size:12px;font-weight:650}.signal-name small{font-weight:400;color:#86948c;margin-left:6px}.signal-toggle{min-width:83px;padding:6px 10px;font-size:10px;letter-spacing:.5px;background:#fff4e2;color:#956323;border-color:#ecd8b6}.signal-toggle.walk{background:#e3f3eb;color:#227a60;border-color:#bcdccc}.row-actions{display:flex;gap:7px;margin-top:10px}.row-actions button{flex:1}.field{margin-top:17px}.field-label{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:600;margin-bottom:9px}.value{font-size:11px;color:#2c7864;background:#edf5ef;padding:3px 7px;border-radius:5px}input[type=range]{width:100%;accent-color:#2d7e67;cursor:pointer;margin:0}select{width:100%;padding:9px;border:1px solid #d8e2d9;border-radius:8px;color:#35584b;background:#fafcf9;font-size:12px}.hint{font-size:10px;color:#829086;margin:6px 0 0;line-height:1.5}.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:15px}.metric{background:#f5f7f3;padding:11px 5px;text-align:center;border-radius:9px}.metric b{display:block;font-size:22px;font-weight:650}.metric span{display:block;font-size:9px;color:#859085;margin-top:3px}.decision{display:flex;gap:9px;padding:10px 0;border-top:1px solid #edf0ec}.decision-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}.decision strong{font-size:11px;display:block}.decision p{font-size:10px;line-height:1.55;color:#79877f;margin:3px 0 0}.rules{max-width:1440px;margin:0 auto;padding:0 36px 26px;display:grid;grid-template-columns:repeat(3,1fr);gap:22px}.rule{font-size:11px;color:#748579;line-height:1.65}.rule b{display:block;color:#3d5b4d;font-size:12px;margin-bottom:3px}.rule em{font-style:normal;color:#2f7c65}footer{max-width:1440px;margin:auto;padding:0 36px 25px;color:#879489;font-size:10px;line-height:1.7}.status{font-size:10px;margin-top:9px;color:#7b8b81;min-height:15px}details{margin-top:12px;font-size:11px}summary{cursor:pointer;color:#477d69}#testResults{white-space:pre-wrap;font-family:inherit;font-size:10px;line-height:1.6;color:#536b5d} @media(min-width:1150px){.simulation{align-self:start}canvas{min-height:610px}}@media(max-width:900px){header{padding:22px 20px}.layout{padding:0 20px 24px;grid-template-columns:1fr}.sidebar{display:grid;grid-template-columns:1fr 1fr}.sidebar .panel:last-child{grid-column:1/-1}.rules{padding:0 20px 20px;gap:15px}footer{padding:0 20px 20px}}@media(max-width:550px){header{align-items:flex-start}.badge{display:none}h1{font-size:28px}.sidebar{display:flex}.rules{grid-template-columns:1fr;gap:12px}.sim-head{top:12px;left:12px;right:12px}.sim-title{font-size:9px}.toolbar button{padding:6px;font-size:10px}.legend{bottom:10px;left:12px;font-size:9px;gap:8px}.panel{padding:17px}}
+/* Controls and legends occupy their own rows, outside the moving scene. */
+.sim-head{position:static;padding:16px 18px;background:#f7faf4;border-bottom:1px solid #d2dfd1;flex-wrap:wrap}.legend{position:static;padding:15px 18px;background:#f7faf4;border-top:1px solid #d2dfd1;color:#294d3e;font-size:12px;gap:12px 20px}.legend .yield-note{flex-basis:100%;font-weight:600}.crossing-key{display:flex;flex-wrap:wrap;gap:8px 18px;padding:12px 18px;background:#edf3e7;font-size:11px;color:#345b47}.signal-toggle{min-width:112px}.signal-toggle.flashing{animation:walkFlash 1s steps(1,end) infinite}.simulation.is-paused .flashing{animation-play-state:paused}@keyframes walkFlash{50%{opacity:.4}}.status{font-size:11px;color:#456552;line-height:1.6}.sub,.hint,.decision p{color:#526c5c}.sidebar{display:flex}.sim-title{font-size:11px}
+.signal-toggle:not(.walk){background:#fff0ed;color:#a34840;border-color:#e3c2bd}
+</style>
+</head>
+<body>
+<header><div><div class="eyebrow">Urban behavior / Interactive study</div><h1>Crossing Lab<span style="color:#72a58d">.</span></h1><p>A small intersection. A series of everyday decisions.</p></div><div class="badge"><i></i>Live simulation · simplified model</div></header>
+<main class="layout">
+<section class="simulation" aria-label="Animated four-way intersection">
+<div class="sim-head"><span class="sim-title">Four-way intersection</span><div class="toolbar"><button id="pause">Pause</button><button id="step" title="Advance one second while paused">Step +1s</button><button id="reset">Reset</button></div></div>
+<canvas id="scene" width="900" height="740" role="img" aria-label="Top-down intersection with North and South 8 meter crosswalks, East and West 14 meter crosswalks. Live pedestrian decisions appear in the adjacent panel."></canvas>
+<div class="crossing-key"><span>↑ North · 8 m</span><span>↓ South · 8 m</span><span>→ East · 14 m</span><span>← West · 14 m</span></div>
+<div class="legend"><span><i class="dot"></i>Waiting</span><span><i class="dot green"></i>Crossing</span><span><i class="dot purple"></i>Arrived</span></div>
+</section>
+<aside class="sidebar">
+<section class="panel"><h2>Set the conditions</h2>
+<p class="sub">Vehicle lights follow the pedestrian cycle automatically.</p><div class="field"><label class="field-label" for="pedPhase">Pedestrian signals</label><select id="pedPhase"><option value="AUTO">Automatic cycle</option><option value="EW">Request North &amp; South WALK · 8 m</option><option value="NS">Request East &amp; West WALK · 14 m</option></select><div id="signals"></div><div id="pedStatus" class="status"></div><div id="phaseStatus" class="status"></div></div>
+<div class="field"><label class="field-label" for="density">Traffic flow <output class="value" id="densityValue">Moderate</output></label><input id="density" type="range" min="0" max="100" value="45"><p class="hint">New arrivals; existing cars continue their journeys.</p></div>
+<div class="field"><label class="field-label" for="speed">Car speed <output class="value" id="speedValue">35 km/h</output></label><input id="speed" type="range" min="15" max="60" value="35" step="5"><p class="hint">Individual target speeds vary by ±20%.</p></div>
+<div class="field"><label class="field-label" for="population">Pedestrians <output class="value" id="populationValue">24</output></label><input id="population" type="range" min="0" max="60" value="24"><p class="hint">Redistributes waiting walkers; active crossings finish.</p></div>
+<div class="row-actions"><button id="randomize" title="Randomize traffic flow, car speed, and pedestrian count together">Randomize</button><button id="clearTraffic">Clear cars</button></div>
+<div class="metrics"><div class="metric"><b id="waitingCount">0</b><span>WAITING</span></div><div class="metric"><b id="crossingCount">0</b><span>CROSSING</span></div><div class="metric"><b id="arrivedCount">0</b><span>COMPLETED</span></div></div>
+</section>
+<section class="panel"><h2>Why cross or wait?</h2><p class="sub">Live example from each crossing. Decisions are rechecked as conditions change.</p><div id="decisions" aria-live="polite" aria-atomic="true"></div><details><summary>Model checks</summary><p class="hint">Deterministic checks for the decision rules and braking model.</p><button id="runTests">Run checks</button><pre id="testResults"></pre></details></section>
+</aside></main>
+<footer>Simplified intersection model, not a real-world safety recommendation. Vehicles travel straight; turning movements are not modeled.</footer>
+<script>
+'use strict';
+(() => {
+const $ = id => document.getElementById(id);
+const canvas = $('scene'), ctx = canvas.getContext('2d');
+const SCALE = 14, W = 900, H = 740, HALF_CAR = 15, DECEL = 4.5 * SCALE, ACCEL = 1.8 * SCALE;
+const crossings = [
+ {name:'North',length:8,axis:'V',pos:224,start:394,end:506,walk:true},
+ {name:'South',length:8,axis:'V',pos:516,start:394,end:506,walk:true},
+ {name:'East',length:14,axis:'H',pos:558,start:272,end:468,walk:false},
+ {name:'West',length:14,axis:'H',pos:342,start:272,end:468,walk:false}
+];
+const lanes = [{axis:'V',dir:1,lane:422,extent:H},{axis:'V',dir:-1,lane:478,extent:H},{axis:'H',dir:1,lane:419,extent:W},{axis:'H',dir:-1,lane:321,extent:W}];
+const state = {cars:[],peds:[],time:0,paused:false,phase:'NS',request:'AUTO',stage:'WALK',stageAge:0,spawn:0,id:0,completed:0};
+const config = {density:45,speed:35,population:24};
+const timing = {WALK:12,CLEAR:5,YELLOW:3}; // Exactly 20 seconds from green to red.
+const rand = (a,b) => a + Math.random() * (b-a);
+const progress = (car,pos) => car.dir===1 ? pos : car.extent-pos;
+const front = car => car.q + HALF_CAR;
+const relevant = car => car.axis==='V'?(car.dir===1?[crossings[0],crossings[1]]:[crossings[1],crossings[0]]):(car.dir===1?[crossings[3],crossings[2]]:[crossings[2],crossings[3]]);
+const occupied = c => state.peds.some(p=>p.cross===c && p.status==='crossing');
+function vehicleColor(axis){return axis!==state.phase?'red':state.stage==='YELLOW'?'yellow':'green';}
+function lightFor(car){return vehicleColor(car.axis==='V'?'NS':'EW')==='green';}
+function mustYieldJunction(car){return state.cars.some(other=>{
+ if(other.axis===car.axis)return false;
+ const first=relevant(other)[0],last=relevant(other)[1];
+ const committed=front(other)>progress(other,first.pos)-21 || other.clearance.has(first.name);
+ return committed && other.q-HALF_CAR<progress(other,last.pos)+14;
+});}
+function stopTarget(car){
+ let target = Infinity;
+ const cs = relevant(car);
+ for(let i=0;i<cs.length;i++){
+  const c=cs[i], entry=progress(car,c.pos)-14, stop=entry-7;
+  // A car already beyond a stop line clears it; downstream crossings remain independent.
+  if(front(car)<=stop+0.5 && !car.clearance?.has(c.name) && (occupied(c) || (i===0 && !lightFor(car)))) target=Math.min(target,stop);
+  // A new green yields to vehicles still clearing the previous phase.
+  // This is a vehicle-level stop, not an all-red signal interval.
+  if(i===0 && front(car)<=stop+0.5 && mustYieldJunction(car))target=Math.min(target,stop);
+ }
+ for(const other of state.cars){
+  if(other!==car && other.laneIndex===car.laneIndex && other.q>car.q) target=Math.min(target,other.q-HALF_CAR-16);
+ }
+ return target;
+}
+function spawnCar(laneIndex, initial=false){
+ const lane=lanes[laneIndex];
+ let q=initial ? rand(-40,125) : -40;
+ const same=state.cars.filter(c=>c.laneIndex===laneIndex);
+ if(same.some(c=>Math.abs(c.q-q)<85)) return;
+ if(!initial && same.some(c=>c.q<60))return;
+ const factor=rand(.8,1.2), desired=config.speed/3.6*SCALE*factor;
+ const car={...lane,laneIndex,q,v:desired,factor,color:['#e6b763','#659d9c','#cedbe2','#aa8da6','#db896e'][Math.floor(rand(0,5))],braking:false,clearance:new Set(),restrictions:new Set()};
+ state.cars.push(car);
+ const target=stopTarget(car);
+ if(Number.isFinite(target))car.v=Math.min(car.v,Math.sqrt(2*DECEL*Math.max(0,target-front(car))));
+ relevant(car).forEach((c,i)=>{if(occupied(c) || (i===0 && !lightFor(car)))car.restrictions.add(c.name);});
+}
+function refreshRestrictions(car){
+ const next=new Set();
+ relevant(car).forEach((c,i)=>{
+  const needed=occupied(c) || (i===0 && !lightFor(car));
+  if(needed){
+   next.add(c.name);
+   const distance=progress(car,c.pos)-21-front(car);
+   // A newly changed signal allows a car too close to brake to clear first.
+   // Pedestrians still wait for that car; occupied crossings never grant clearance.
+   if(!car.restrictions.has(c.name) && !occupied(c) && car.v>2 && distance+2<car.v*car.v/(2*DECEL))car.clearance.add(c.name);
+  }else car.clearance.delete(c.name);
+ });
+ car.restrictions=next;
+}
+function gapFor(c){
+ let gap=Infinity;
+ for(const car of state.cars){
+  if(car.axis!==c.axis)continue;
+  const center=progress(car,c.pos), entry=center-14, exit=center+14;
+  if(car.q-HALF_CAR>=exit)continue;
+  if(front(car)>=entry){gap=0;continue;}
+  const distance=entry-front(car), target=stopTarget(car);
+  // Red-light traffic that can brake before this crossing will not enter it.
+  // This lets WALK start immediately, instead of waiting for every distant car to stop.
+  if(Number.isFinite(target) && target<entry && car.v*car.v/(2*DECEL)<=Math.max(0,target-front(car))+2)continue;
+  // Use free-flow speed too, so an accelerating car never looks like an infinite gap.
+  const approach=Math.max(car.v,config.speed/3.6*SCALE*car.factor);
+  gap=Math.min(gap,distance/approach);
+ }
+ return gap;
+}
+function decide({walk,length,gap,speed,flashing=false,nearby=false,peers=false,observedClear=0,considerTime=.8}){
+ const required=length/speed+3;
+ if(walk)return {go:true,kind:'walk',reason:`${flashing?'Flashing green counts as WALK':'WALK'}: cross the ${length} m crosswalk.`};
+ if(length>8)return {go:false,kind:'distance',reason:`DON’T WALK → ${length} m is long → wait for WALK and check again.`};
+ if(nearby || gap<=required)return {go:false,kind:'traffic',reason:'DON’T WALK → 8 m is short → cars are nearby or approaching → wait and check again.'};
+ if(peers)return {go:true,kind:'group',reason:'DON’T WALK → 8 m is short → traffic is clear and others just started → cross together.'};
+ if(observedClear<considerTime)return {go:false,kind:'consider',reason:'DON’T WALK → 8 m is short → no nearby cars → considering crossing and rechecking traffic.'};
+ return {go:true,kind:'gap',reason:'DON’T WALK → 8 m is short → no nearby cars and traffic remains clear → cross.'};
+}
+function nearbyCars(c){return state.cars.some(car=>{
+ if(car.axis!==c.axis)return false;
+ const center=progress(car,c.pos);
+ return car.q-HALF_CAR<center+14 && center-14-front(car)<35*SCALE;
+});}
+function newPed(){
+ const cross=crossings[Math.floor(rand(0,4))];
+ return {id:++state.id,cross,status:'waiting',speed:rand(1.1,1.6),dir:Math.random()<.5?1:-1,offset:rand(-8,8),travel:0,ready:state.time+rand(.4,2),clearSince:null,considerTime:rand(.8,1.8),reason:'Arrived at the intersection → checking the walk signal.',kind:'observe'};
+}
+function reconcilePopulation(){
+ const active=state.peds.filter(p=>p.status==='crossing');
+ const keep=Math.max(config.population,active.length);
+ const others=state.peds.filter(p=>p.status!=='crossing');
+ state.peds=active.concat(others.slice(0,keep-active.length));
+ while(state.peds.length<config.population)state.peds.push(newPed());
+}
+function randomizePopulation(){
+ state.peds=state.peds.filter(p=>p.status==='crossing');
+ reconcilePopulation();updateUI();
+}
+function intersectionBusy(){return state.cars.some(car=>{
+ const xy=car.dir===1?car.q:car.extent-car.q;
+ return car.axis==='V'?xy+HALF_CAR>240 && xy-HALF_CAR<500:xy+HALF_CAR>358 && xy-HALF_CAR<542;
+});}
+function syncCrossings(){for(const c of crossings){const linked=c.axis!==(state.phase==='NS'?'V':'H');c.walk=['WALK','CLEAR','YELLOW'].includes(state.stage)&&linked;c.flashing=['CLEAR','YELLOW'].includes(state.stage)&&linked;}}
+function requestPhase(value){
+ // Requests select the next phase without shortening the 20-second cycle.
+ state.request=value===state.phase?'AUTO':value;
+ $('pedPhase').value=state.request;
+ syncCrossings();updateUI();draw();
+}
+function advanceSignals(dt){
+ state.stageAge+=dt;
+ if(state.stage==='WALK' && state.stageAge>=timing.WALK-1e-9){state.stage='CLEAR';state.stageAge=Math.max(0,state.stageAge-timing.WALK);}
+ else if(state.stage==='CLEAR' && state.stageAge>=timing.CLEAR-1e-9){state.stage='YELLOW';state.stageAge=Math.max(0,state.stageAge-timing.CLEAR);}
+ // One phase turns red as the next turns green; cars yield to unfinished crossings.
+ else if(state.stage==='YELLOW' && state.stageAge>=timing.YELLOW-1e-9){
+  state.stageAge=Math.max(0,state.stageAge-timing.YELLOW);
+  state.phase=state.request==='NS'||state.request==='EW'?state.request:state.phase==='NS'?'EW':'NS';
+  state.stage='WALK';state.request='AUTO';$('pedPhase').value='AUTO';
+ }
+ syncCrossings();
+}
+function advance(dt){
+ state.time+=dt;advanceSignals(dt);
+ state.spawn+=dt;
+ const interval=config.density===0?Infinity:3.8-config.density*.032;
+ if(state.spawn>=interval){state.spawn=0;spawnCar(Math.floor(rand(0,4)));}
+ // Front-to-back updates preserve spacing when a lead vehicle brakes.
+ state.cars.forEach(refreshRestrictions);
+ state.cars.sort((a,b)=>b.q-a.q);
+ for(const car of state.cars){
+  const target=stopTarget(car), distance=target-front(car), desiredSpeed=config.speed/3.6*SCALE*car.factor;
+  const allowed=Number.isFinite(target)?Math.min(desiredSpeed,Math.sqrt(2*DECEL*Math.max(0,distance))):desiredSpeed;
+  const old=car.v;
+  car.v=Math.max(0,Math.min(allowed,old+ACCEL*dt));
+  if(allowed<old)car.v=Math.max(allowed,old-DECEL*dt);
+  let move=(old+car.v)*.5*dt;
+  if(Number.isFinite(target) && move>=Math.max(0,distance)){move=Math.max(0,distance);car.v=0;}
+  car.q+=move;car.braking=car.v<old-.1 || car.v<1;
+ }
+ state.cars=state.cars.filter(c=>c.q<c.extent+70);
+ const observations=new Map(crossings.map(c=>[c,{gap:gapFor(c),nearby:nearbyCars(c)}]));
+ for(const p of state.peds){
+  if(p.status==='crossing'){
+   p.travel+=p.speed*dt;
+   if(p.travel>=p.cross.length){p.travel=p.cross.length;p.status='arrived';state.completed++;p.arrivedAt=state.time;p.reason='Crossing complete. Returning by a sidewalk to a new crossing.';}
+  }else if(p.status==='arrived'){
+   if(state.time-p.arrivedAt>6)Object.assign(p,newPed());
+  }else{
+   const {gap,nearby}=observations.get(p.cross),required=p.cross.length/p.speed+3;
+   if(!nearby && gap>required){if(p.clearSince===null)p.clearSince=state.time;}else p.clearSince=null;
+   const peers=state.peds.some(other=>other!==p&&other.cross===p.cross&&other.status==='crossing'&&state.time-other.startedAt<1.5);
+   const result=decide({walk:p.cross.walk,length:p.cross.length,gap,speed:p.speed,flashing:p.cross.flashing,nearby,peers,observedClear:p.clearSince===null?0:state.time-p.clearSince,considerTime:p.considerTime});
+   p.reason=result.reason;p.kind=result.kind;
+   // WALK determines intent immediately; a vehicle still clearing retains the roadway until it passes.
+   if(result.go && gap<=required && p.cross.walk)p.reason='WALK → ready to cross; a car already clearing the crosswalk must pass first.';
+   if(result.go && gap>required && (p.cross.walk || state.time>=p.ready)){p.status='crossing';p.travel=0;p.startedAt=state.time;}
+  }
+ }
+ // Lowering the population never removes someone from the roadway.
+ if(state.peds.length>config.population)reconcilePopulation();
+}
+function roundRect(x,y,w,h,r,color){ctx.fillStyle=color;ctx.beginPath();ctx.roundRect(x,y,w,h,r);ctx.fill();}
+function label(text,x,y,size=12,color='#496557',align='center'){ctx.fillStyle=color;ctx.font=`${size}px system-ui,sans-serif`;ctx.textAlign=align;ctx.fillText(text,x,y);}
+function drawTree(x,y,r){ctx.fillStyle='#cfdbbf';ctx.beginPath();ctx.arc(x+3,y+5,r+3,0,Math.PI*2);ctx.fill();ctx.fillStyle='#b4cba5';ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();ctx.fillStyle='#bfd3b0';ctx.beginPath();ctx.arc(x-5,y-5,r*.65,0,Math.PI*2);ctx.fill();}
+function signal(x,y,c){
+ roundRect(x-10,y-12,20,24,5,'#334f45');
+ if(c.flashing && Math.floor(state.time*2)%2===0)return;
+ ctx.fillStyle=c.walk?'#72dfb0':'#ff8c82';ctx.strokeStyle=ctx.fillStyle;ctx.lineWidth=2;
+ if(!c.walk){ctx.beginPath();ctx.moveTo(x-4,y+7);ctx.lineTo(x-5,y-2);ctx.lineTo(x-2,y);ctx.lineTo(x-2,y-7);ctx.moveTo(x,y-7);ctx.lineTo(x,y+1);ctx.moveTo(x+2,y-6);ctx.lineTo(x+2,y+1);ctx.moveTo(x+4,y-4);ctx.lineTo(x+4,y+4);ctx.lineTo(x+2,y+7);ctx.stroke();return;}
+ ctx.beginPath();ctx.arc(x,y-5,2,0,Math.PI*2);ctx.fill();ctx.beginPath();ctx.moveTo(x,y-2);ctx.lineTo(x,y+4);ctx.moveTo(x,y);ctx.lineTo(x-4,y+3);ctx.moveTo(x,y);ctx.lineTo(x+4,y+3);ctx.moveTo(x,y+4);ctx.lineTo(x-3,y+8);ctx.moveTo(x,y+4);ctx.lineTo(x+3,y+8);ctx.stroke();
+}
+function trafficLight(x,y,axis,orientation='horizontal'){
+ const color=vehicleColor(axis);
+ const vertical=orientation==='vertical';
+ roundRect(x-(vertical?11:34),y-(vertical?34:11),vertical?22:68,vertical?68:22,6,'#334c44');
+ ['red','yellow','green'].forEach((lamp,i)=>{ctx.fillStyle=color===lamp?['#f28b76','#f4c861','#7cd6aa'][i]:'#506359';ctx.beginPath();ctx.arc(vertical?x:x-22+i*22,vertical?y-22+i*22:y,7,0,Math.PI*2);ctx.fill();});
+}
+function draw(){
+ ctx.clearRect(0,0,W,H);ctx.fillStyle='#e5ece0';ctx.fillRect(0,0,W,H);
+ // Sidewalks and differently sized road corridors use 14 pixels per meter.
+ roundRect(368,-20,164,780,20,'#d6dbd1');roundRect(-20,246,940,248,20,'#d6dbd1');
+ ctx.fillStyle='#64736f';ctx.fillRect(394,0,112,H);ctx.fillRect(0,272,W,196);
+ ctx.strokeStyle='#85938b';ctx.lineWidth=2;ctx.setLineDash([12,12]);
+ ctx.beginPath();ctx.moveTo(450,0);ctx.lineTo(450,206);ctx.moveTo(450,534);ctx.lineTo(450,H);ctx.moveTo(0,370);ctx.lineTo(324,370);ctx.moveTo(576,370);ctx.lineTo(W,370);ctx.stroke();ctx.setLineDash([]);
+ for(const c of crossings){
+  const vertical=c.axis==='V';ctx.fillStyle='#dce2d6';
+  if(vertical){for(let x=c.start+4;x<c.end;x+=14)ctx.fillRect(x,c.pos-11,8,22);}
+  else{for(let y=c.start+4;y<c.end;y+=14)ctx.fillRect(c.pos-11,y,22,8);}
+  ctx.strokeStyle=c.walk?'#73bda1':'#d9ad6e';ctx.lineWidth=2;ctx.beginPath();
+  if(vertical){ctx.moveTo(c.start,c.pos+17);ctx.lineTo(c.end,c.pos+17);}else{ctx.moveTo(c.pos+17,c.start);ctx.lineTo(c.pos+17,c.end);}ctx.stroke();
+ }
+ ctx.strokeStyle='#d6ddd2';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(398,203);ctx.lineTo(446,203);ctx.moveTo(454,537);ctx.lineTo(502,537);ctx.moveTo(321,374);ctx.lineTo(321,464);ctx.moveTo(579,276);ctx.lineTo(579,366);ctx.stroke();
+ drawTree(130,145,29);drawTree(255,180,18);drawTree(740,147,32);drawTree(635,184,18);drawTree(147,610,31);drawTree(278,566,17);drawTree(747,602,29);drawTree(650,554,18);
+ roundRect(175,99,69,12,4,'#bbcbb3');roundRect(655,633,69,12,4,'#bbcbb3');
+ // Vehicle lights sit upstream, beside the curb, with space from pedestrian signals.
+ trafficLight(379,132,'NS','vertical');trafficLight(521,608,'NS','vertical');trafficLight(250,483,'EW');trafficLight(650,257,'EW');
+ for(const car of state.cars){
+  let coord=car.dir===1?car.q:car.extent-car.q;
+  ctx.save();ctx.translate(car.axis==='V'?car.lane:coord,car.axis==='V'?coord:car.lane);ctx.rotate(car.axis==='V'?(car.dir===1?Math.PI:0):(car.dir===1?Math.PI/2:-Math.PI/2));
+  roundRect(-10,-15,22,32,5,'#4f615c');roundRect(-10,-16,20,30,5,car.color);roundRect(-7,-9,14,7,2,'#405b5c');roundRect(-7,4,14,5,2,'#536f6c');roundRect(-8,-15,4,2,1,'#f1ead0');roundRect(4,-15,4,2,1,'#f1ead0');roundRect(-8,11,4,2,1,car.braking?'#fb7b65':'#aa695c');roundRect(4,11,4,2,1,car.braking?'#fb7b65':'#aa695c');ctx.restore();
+ }
+ const queues=new Map();
+ for(const p of state.peds){
+  const c=p.cross,key=c.name+p.dir;let along;
+  if(p.status==='crossing')along=p.dir===1?c.start+p.travel*SCALE:c.end-p.travel*SCALE;
+  else if(p.status==='arrived')along=p.dir===1?c.end+18:c.start-18;
+  else{const n=queues.get(key)||0;queues.set(key,n+1);along=p.dir===1?c.start-24-Math.floor(n/5)*13:c.end+24+Math.floor(n/5)*13;}
+  let offset=p.offset;
+  if(p.status==='waiting'){const n=(queues.get(key)||1)-1;offset=(n%5-2)*10;}
+  const x=c.axis==='V'?along:c.pos+offset,y=c.axis==='V'?c.pos+offset:along;
+  ctx.fillStyle='#66745d33';ctx.beginPath();ctx.ellipse(x+2,y+3,5,4,0,0,Math.PI*2);ctx.fill();
+  if(p.status==='crossing'){ctx.strokeStyle='#196e58';ctx.lineWidth=2;const swing=Math.sin(state.time*p.speed*9+p.id)*3;ctx.beginPath();ctx.moveTo(x-3,y+swing);ctx.lineTo(x+3,y-swing);ctx.stroke();}
+  ctx.fillStyle=p.status==='waiting'?'#e1a14c':p.status==='crossing'?'#28896e':'#8a77af';ctx.beginPath();ctx.arc(x,y,4.5,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#fff9';ctx.lineWidth=1;ctx.stroke();
+ }
+ // Signal icons occupy separate sidewalk positions and render above walkers.
+ signal(379,184,crossings[0]);signal(521,184,crossings[0]);signal(379,556,crossings[1]);signal(521,556,crossings[1]);signal(598,257,crossings[2]);signal(598,483,crossings[2]);signal(302,257,crossings[3]);signal(302,483,crossings[3]);
+}
+function updateSignals(){
+ for(const c of crossings){const b=$('signal'+c.name);b.className='signal-toggle'+(c.walk?' walk':'')+(c.flashing?' flashing':'');b.textContent=c.flashing?'● WALK · flashing':c.walk?'● WALK':'● DON’T WALK';}
+}
+function updateUI(){
+ updateSignals();
+ $('waitingCount').textContent=state.peds.filter(p=>p.status==='waiting').length;
+ $('crossingCount').textContent=state.peds.filter(p=>p.status==='crossing').length;
+ $('arrivedCount').textContent=state.completed;
+ const seconds=Math.max(0,Math.ceil(timing[state.stage]-state.stageAge)),axis=state.phase==='NS'?'North–South':'East–West';
+ const remaining=Math.ceil(timing[state.stage]-state.stageAge+(state.stage==='WALK'?timing.CLEAR+timing.YELLOW:state.stage==='CLEAR'?timing.YELLOW:0));
+ $('phaseStatus').textContent=`Vehicles: ${axis} ${state.stage==='YELLOW'?'yellow':'green'} · other direction red`;
+ $('pedStatus').textContent=(state.request!=='AUTO'?`Queued: ${state.request==='EW'?'North & South':'East & West'} WALK. `:'')+`${state.phase==='NS'?'East & West':'North & South'} ${state.stage==='WALK'?'WALK':'flashing green WALK'} · ${remaining} s to switch`;
+ const signature=crossings.map(c=>{
+  const waiting=state.peds.find(p=>p.cross===c && p.status==='waiting'),moving=state.peds.find(p=>p.cross===c && p.status==='crossing'),p=waiting||moving||state.peds.find(p=>p.cross===c);
+  const title=p?`#${p.id} · ${c.name} · ${p.status==='crossing'?'Crossing':p.status==='waiting'?'Waiting':'Arrived'}`:`${c.name} · No pedestrians`;
+  const reason=p?(p.status==='crossing'?p.reason+' Finishing even if the signal changes.':p.reason):'Use Randomize to change traffic and redistribute the crowd.';
+  return `<div class="decision"><i class="decision-dot" style="background:${p?.status==='crossing'?'#28896e':p?.status==='arrived'?'#8a77af':'#e1a14c'}"></i><div><strong>${title}</strong><p>${reason}</p></div></div>`;
+ }).join('');
+ if($('decisions').innerHTML!==signature)$('decisions').innerHTML=signature;
+}
+function reset(){state.cars=[];state.peds=[];state.time=0;state.completed=0;state.id=0;state.spawn=0;state.phase='NS';state.stage='WALK';state.stageAge=0;state.request='AUTO';$('pedPhase').value='AUTO';syncCrossings();for(let i=0;i<4;i++)spawnCar(i,true);reconcilePopulation();updateUI();draw();}
+for(const c of crossings){
+ const row=document.createElement('div');row.className='signal-row';row.innerHTML=`<span class="signal-name">${c.name}<small>${c.length} m</small></span><span id="signal${c.name}" class="signal-toggle" style="text-align:center"></span>`;$('signals').append(row);
+}
+$('pause').onclick=()=>{state.paused=!state.paused;$('pause').textContent=state.paused?'Resume':'Pause';updateUI();draw();};
+$('step').onclick=()=>{state.paused=true;$('pause').textContent='Resume';for(let i=0;i<120;i++)advance(1/120);updateUI();draw();};
+$('reset').onclick=reset;
+$('pedPhase').onchange=e=>requestPhase(e.target.value);
+for(const id of ['density','speed','population'])$(id).oninput=e=>{
+ config[id]=Number(e.target.value);
+ $(id+'Value').textContent=id==='density'?(config[id]===0?'None':config[id]<30?'Light':config[id]<70?'Moderate':'Heavy'):config[id]+(id==='speed'?' km/h':'');
+ if(id==='population')reconcilePopulation();updateUI();draw();
+};
+function randomizeConditions(){
+ config.density=Math.floor(rand(0,101));config.speed=15+5*Math.floor(rand(0,10));config.population=Math.floor(rand(0,61));
+ for(const id of ['density','speed','population'])$(id).value=config[id];
+ $('densityValue').textContent=config.density===0?'None':config.density<30?'Light':config.density<70?'Moderate':'Heavy';
+ $('speedValue').textContent=config.speed+' km/h';$('populationValue').textContent=config.population;
+ randomizePopulation();draw();
+}
+$('randomize').onclick=randomizeConditions;
+$('clearTraffic').onclick=()=>{state.cars=[];updateUI();draw();};
+function runChecks(){
+ const checks=[];const test=(name,fn)=>{try{if(!fn())throw Error('assertion failed');checks.push('PASS  '+name);}catch(e){checks.push('FAIL  '+name+': '+e.message);}};
+ const d=(walk,length,gap,speed=1.4)=>decide({walk,length,gap,speed}).go;
+ test('DON’T WALK + long distance means wait',()=>!d(false,14,Infinity));
+ test('DON’T WALK + short distance considers first',()=>!d(false,8,Infinity));
+ test('Short clear crossing starts after consideration',()=>decide({walk:false,length:8,gap:Infinity,speed:1.4,observedClear:2}).go);
+ test('Nearby cars prevent a short crossing',()=>!decide({walk:false,length:8,gap:Infinity,speed:1.4,nearby:true,observedClear:2}).go);
+ test('Approaching cars prevent a short crossing',()=>!decide({walk:false,length:8,gap:4,speed:1.4,observedClear:2}).go);
+ test('Clear traffic + others starting means cross together',()=>decide({walk:false,length:8,gap:Infinity,speed:1.4,peers:true}).kind==='group');
+ test('A group cannot override nearby cars',()=>!decide({walk:false,length:8,gap:Infinity,speed:1.4,peers:true,nearby:true}).go);
+ test('A group cannot override a long crossing',()=>!decide({walk:false,length:14,gap:Infinity,speed:1.4,peers:true}).go);
+ test('WALK + clear crossing permits a start',()=>d(true,14,Infinity));
+ test('WALK selects crossing before distance evaluation',()=>d(true,14,0));
+ test('Flashing green counts as WALK',()=>decide({walk:true,flashing:true,length:14,gap:Infinity,speed:1.4}).go);
+ test('Insufficient traffic gap blocks DON’T WALK crossing',()=>!decide({walk:false,length:8,gap:8/1.4+3,speed:1.4,observedClear:2}).go);
+ const saved={...state};
+ try{
+  state.peds=[];state.phase='NS';state.stage='WALK';state.request='AUTO';
+  const car={...lanes[2],laneIndex:2,q:120,v:120,factor:1,clearance:new Set(),restrictions:new Set()};state.cars=[car];
+  test('Red light sets a stop before first crosswalk',()=>stopTarget(car)<crossings[3].pos-14);
+  car.q=322;test('Car past stop line can clear the junction',()=>stopTarget(car)!==321);
+  state.stage='WALK';syncCrossings();
+  test('NS green links to East & West WALK',()=>crossings[2].walk&&crossings[3].walk&&!crossings[0].walk&&!crossings[1].walk);
+  Object.assign(car,lanes[0],{laneIndex:0,q:150,v:0});state.peds=[{cross:crossings[0],status:'crossing'}];
+  test('Occupied crosswalk creates a vehicle stop',()=>Number.isFinite(stopTarget(car)));
+  test('Stopped yielding car is excluded from gap',()=>gapFor(crossings[0])===Infinity);
+  car.q=224;test('Car on crosswalk blocks pedestrian entry',()=>gapFor(crossings[0])===0);
+  state.cars=[];state.spawn=0;state.stage='WALK';state.stageAge=0;syncCrossings();
+  const immediate={id:999,cross:crossings[2],status:'waiting',speed:1.4,ready:state.time+100,clearSince:null,considerTime:2,travel:0};state.peds=[immediate];advance(1/120);
+  test('Steady green starts walking immediately, without a readiness delay',()=>immediate.status==='crossing'&&state.stage==='WALK');
+  state.peds=[];state.stageAge=12;advanceSignals(0);
+  test('WALK changes to flashing green WALK',()=>state.stage==='CLEAR'&&crossings[2].walk&&crossings[2].flashing);
+  state.stageAge=5;advanceSignals(0);
+  test('Pedestrian WALK stays green through vehicle yellow',()=>state.stage==='YELLOW'&&crossings[2].walk&&crossings[2].flashing&&vehicleColor('NS')==='yellow');
+  state.stageAge=3;advanceSignals(0);
+  test('Signals swap directly with no all-red interval',()=>state.phase==='EW'&&state.stage==='WALK'&&vehicleColor('NS')==='red'&&vehicleColor('EW')==='green'&&crossings[0].walk&&!crossings[2].walk);
+  test('Total green-to-red timing is exactly 20 seconds',()=>timing.WALK+timing.CLEAR+timing.YELLOW===20);
+  state.phase='NS';state.stage='WALK';state.stageAge=0;state.request='AUTO';syncCrossings();
+  for(let i=0;i<2400;i++)advanceSignals(1/120);
+  test('20 seconds advances exactly one automatic phase',()=>state.phase==='EW'&&state.stage==='WALK'&&state.stageAge<1e-6);
+  const clearing={...lanes[0],laneIndex:0,q:340,v:80,factor:1,clearance:new Set(),restrictions:new Set()};
+  const arriving={...lanes[2],laneIndex:2,q:120,v:0,factor:1,clearance:new Set(),restrictions:new Set()};state.cars=[clearing,arriving];
+  test('New green yields to traffic clearing the old phase',()=>vehicleColor('EW')==='green'&&Number.isFinite(stopTarget(arriving)));
+  state.phase='NS';state.stage='WALK';state.stageAge=0;requestPhase('EW');
+  test('A phase request keeps the full 20-second cycle',()=>state.stage==='WALK'&&state.stageAge===0);
+ }finally{Object.assign(state,saved);syncCrossings();$('pedPhase').value=state.request;updateUI();}
+ $('testResults').textContent=checks.join('\n')+`\n\n${checks.filter(c=>c.startsWith('PASS')).length}/${checks.length} checks passed.`;
+ return checks;
+}
+$('runTests').onclick=runChecks;
+// Small public surface for inspecting rules without modifying the UI.
+window.crossingLab={decide,runChecks,snapshot:()=>({time:state.time,phase:state.phase,cars:state.cars.length,waiting:state.peds.filter(p=>p.status==='waiting').length,crossing:state.peds.filter(p=>p.status==='crossing').length,completed:state.completed})};
+updateSignals();reset();
+let last=performance.now(),uiClock=0,accumulator=0;
+function frame(now){const elapsed=Math.min((now-last)/1000,.1);last=now;if(!state.paused){accumulator+=elapsed;while(accumulator>=1/120){advance(1/120);accumulator-=1/120;}}else accumulator=0;uiClock+=elapsed;if(uiClock>.45){updateUI();uiClock=0;}draw();requestAnimationFrame(frame);}
+requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
